@@ -460,7 +460,7 @@ function exportJSON() {
     const { headword, ...rest } = term; // strip any legacy headword field
     exportData.entries[key] = { headWord: key, ...rest };
   }
-  const dataStr = JSON.stringify(exportData, null, 2);
+  const dataStr = JSON.stringify(exportData, null, 3);
   const blob = new Blob([dataStr], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   
