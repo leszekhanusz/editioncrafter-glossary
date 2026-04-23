@@ -8,6 +8,10 @@ The editor runs entirely in the browser using Vanilla HTML, CSS, and JavaScript.
 
 You can start using the editor by going to [https://leszekhanusz.github.io/editioncrafter-glossary](https://leszekhanusz.github.io/editioncrafter-glossary)
 
+## Screenshot
+
+![EditionCrafter Glossary Editor screenshot](screenshot.png)
+
 ## Features
 
 - **Beautiful, Premium Design**: A modern dark mode interface with glassmorphism effects and smooth micro-animations.
