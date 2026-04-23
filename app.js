@@ -276,6 +276,24 @@ async function deleteCurrentTerm() {
 }
 
 // Meanings
+const POS_OPTIONS = ['n.(m)', 'n.(f)', 'v.', 'adj.', 'adv.', 'pron.', 'prep.'];
+
+function buildPosField(index, currentValue) {
+  const isCustom = currentValue && !POS_OPTIONS.includes(currentValue);
+  const selectVal = isCustom ? '__custom__' : (currentValue || '');
+  const options = ['', ...POS_OPTIONS, '__custom__'].map(opt => {
+    if (opt === '') return `<option value="" ${!currentValue ? 'selected' : ''}>— Select —</option>`;
+    if (opt === '__custom__') return `<option value="__custom__" ${isCustom ? 'selected' : ''}>Custom…</option>`;
+    return `<option value="${opt}" ${selectVal === opt ? 'selected' : ''}>${opt}</option>`;
+  }).join('');
+  return `
+    <select class="m-pos-select" data-index="${index}">${options}</select>
+    <input type="text" class="m-pos-custom${isCustom ? '' : ' hidden'}" data-index="${index}"
+      value="${isCustom ? currentValue : ''}" placeholder="Enter custom part of speech…"
+      style="margin-top: 0.5rem;">
+  `;
+}
+
 function renderMeanings() {
   meaningsContainer.innerHTML = '';
   const term = glossary.entries[currentTermKey];
@@ -301,7 +319,7 @@ function renderMeanings() {
       <div class="form-grid">
         <div class="form-group" style="grid-column: span 2;">
           <label>Part of Speech</label>
-          <input type="text" class="m-pos" data-index="${index}" value="${meaningObj.partOfSpeech || ''}" placeholder="e.g. noun">
+          ${buildPosField(index, meaningObj.partOfSpeech || '')}
         </div>
         <div class="form-group" style="grid-column: span 2;">
           <label>Meaning</label>
@@ -340,11 +358,35 @@ function renderMeanings() {
     });
   });
 
-  document.querySelectorAll('.m-pos, .m-mean, .m-ref').forEach(input => {
+  document.querySelectorAll('.m-pos-select').forEach(select => {
+    select.addEventListener('change', (e) => {
+      const idx = e.target.getAttribute('data-index');
+      const val = e.target.value;
+      const customInput = e.target.closest('.form-group').querySelector('.m-pos-custom');
+      if (val === '__custom__') {
+        customInput.classList.remove('hidden');
+        customInput.focus();
+        // Don't update state yet; wait for custom input
+      } else {
+        customInput.classList.add('hidden');
+        term.meanings[idx].partOfSpeech = val;
+        saveState();
+      }
+    });
+  });
+
+  document.querySelectorAll('.m-pos-custom').forEach(input => {
+    input.addEventListener('input', (e) => {
+      const idx = e.target.getAttribute('data-index');
+      term.meanings[idx].partOfSpeech = e.target.value;
+      saveState();
+    });
+  });
+
+  document.querySelectorAll('.m-mean, .m-ref').forEach(input => {
     input.addEventListener('input', (e) => {
       const idx = e.target.getAttribute('data-index');
       const val = e.target.value;
-      if (e.target.classList.contains('m-pos')) term.meanings[idx].partOfSpeech = val;
       if (e.target.classList.contains('m-mean')) term.meanings[idx].meaning = val;
       if (e.target.classList.contains('m-ref')) term.meanings[idx].references = val;
       saveState();

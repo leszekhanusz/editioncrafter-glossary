@@ -407,7 +407,7 @@ label {
   letter-spacing: 0.05em;
 }
 
-input[type="text"], textarea {
+input[type="text"], textarea, select {
   background: rgba(0,0,0,0.2);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
@@ -417,13 +417,21 @@ input[type="text"], textarea {
   font-size: 0.95rem;
   transition: var(--transition);
   width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
 }
 
-input[type="text"]:focus, textarea:focus {
+input[type="text"]:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
   background: rgba(0,0,0,0.4);
+}
+
+select option {
+  background: #1e293b;
+  color: var(--text-primary);
 }
 
 textarea {
