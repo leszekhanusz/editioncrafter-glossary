@@ -11,7 +11,7 @@ The editor runs entirely in the browser using Vanilla HTML, CSS, and JavaScript.
 - **Drag & Drop Import**: Simply drag a `.json` glossary file into the window to import it, or use the Import button.
 - **JSON Export**: Export your glossary to a compliant JSON format ready to be consumed by EditionCrafter.
 - **Markdown Support**: Render markdown live while editing the glossary's `Title` and `Citation`.
-- **Debounced Search**: Quickly find terms across headwords, alternate spellings, meanings, and parts of speech.
+- **Debounced Search**: Quickly find terms across alternate spellings, meanings, and parts of speech.
 - **Dynamic Meanings**: Add multiple meanings and references to any single term.
 - **Sorting**: Toggle between alphabetical sorting and insertion order.
 
@@ -33,7 +33,7 @@ This editor generates and consumes JSON files adhering to the following structur
   "citation": "[information on how to cite the glossary, written in markdown]",
   "entries": {
     "[Term]": {
-      "headword": "...",
+      "headWord": "[Term]",
       "alternateSpellings": "...",
       "meanings": [
         {
