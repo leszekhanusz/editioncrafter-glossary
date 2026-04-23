@@ -19,7 +19,7 @@ The editor runs entirely in the browser using Vanilla HTML, CSS, and JavaScript.
 
 1. **Open the App**: Since this is a static webpage without dependencies, you can simply open `index.html` in your web browser. Alternatively, you can host it anywhere (like GitHub Pages).
 2. **Edit Metadata**: Fill out the glossary title and citation. These support Markdown.
-3. **Add Terms**: Click the `+` button in the sidebar to add a new term. Fill in the relevant fields (`Headword`, `Alternate Spellings`, etc.).
+3. **Add Terms**: Click the `+` button in the sidebar to add a new term. Fill in the relevant fields (`Alternate Spellings`, `Modern Spelling`, etc.).
 4. **Add Meanings**: For a selected term, click "Add Meaning" to define its parts of speech, definition, and references.
 5. **Export**: When finished, click the `Export JSON` button in the top right to download your file.
 
