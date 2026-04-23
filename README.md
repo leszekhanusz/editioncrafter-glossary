@@ -31,6 +31,10 @@ You can start using the editor by going to [https://leszekhanusz.github.io/editi
 4. **Add Meanings**: For a selected term, click "Add Meaning" to define its parts of speech, definition, and references.
 5. **Export**: When finished, click the `Export JSON` button in the top right to download your file.
 
+## Example glossary file
+
+As an example you can import the glossary of the Making and Knowing Project available at https://cu-mkp.github.io/editioncrafter-data/fr640_3r-3v-example/glossary.json
+
 ## JSON Format Specification
 
 This editor generates and consumes JSON files adhering to the following structure:
