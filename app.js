@@ -11,6 +11,12 @@ let currentTermKey = null;
 let searchTimeout = null;
 let searchQuery = "";
 let sortAlphabetically = localStorage.getItem('editioncrafter_sort_alpha') !== 'false';
+let hasUnexportedChanges = localStorage.getItem('editioncrafter_has_unexported_changes') === 'true';
+
+function setUnexportedChanges(value) {
+  hasUnexportedChanges = value;
+  localStorage.setItem('editioncrafter_has_unexported_changes', value);
+}
 
 // DOM Elements
 const termListEl = document.getElementById('entries-list');
@@ -167,8 +173,11 @@ function init() {
   setupDragAndDrop();
 }
 
-function saveState() {
+function saveState(isSystemAction = false) {
   localStorage.setItem('editioncrafter_glossary', JSON.stringify(glossary));
+  if (!isSystemAction) {
+    setUnexportedChanges(true);
+  }
 }
 
 // Markdown Preview
@@ -503,11 +512,19 @@ function setupDragAndDrop() {
     }
   });
 
-  window.addEventListener('drop', (e) => {
+  window.addEventListener('drop', async (e) => {
     e.preventDefault();
     dropOverlay.classList.add('hidden');
     
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      if (hasUnexportedChanges) {
+        const confirmed = await showConfirm('You have unexported modifications. Are you sure you want to import and overwrite them?', {
+          title: 'Import Glossary',
+          confirmLabel: 'Overwrite',
+          confirmClass: 'btn-danger'
+        });
+        if (!confirmed) return;
+      }
       handleImportFile(e.dataTransfer.files[0]);
     }
   });
@@ -533,7 +550,8 @@ function handleImportFile(file) {
       if (typeof parsed.entries !== 'object') throw new Error("Missing 'entries' object");
       
       glossary = parsed;
-      saveState();
+      saveState(true);
+      setUnexportedChanges(false);
       currentTermKey = null;
       termEditorEl.classList.add('hidden');
       metadataEditorEl.classList.remove('hidden');
@@ -570,6 +588,7 @@ function exportJSON() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+  setUnexportedChanges(false);
 }
 
 
@@ -624,7 +643,18 @@ function setupEventListeners() {
   btnAddMeaning.addEventListener('click', addMeaning);
   
   btnExport.addEventListener('click', exportJSON);
-  btnImport.addEventListener('click', () => fileImport.click());
+  btnImport.addEventListener('click', async (e) => {
+    e.preventDefault();
+    if (hasUnexportedChanges) {
+      const confirmed = await showConfirm('You have unexported modifications. Are you sure you want to import and overwrite them?', {
+        title: 'Import Glossary',
+        confirmLabel: 'Overwrite',
+        confirmClass: 'btn-danger'
+      });
+      if (!confirmed) return;
+    }
+    fileImport.click();
+  });
 
   // Settings
   btnSettings.addEventListener('click', () => settingsModal.classList.remove('hidden'));
@@ -644,7 +674,8 @@ function setupEventListeners() {
     });
     if (confirmed) {
       glossary = structuredClone(defaultState);
-      saveState();
+      saveState(true);
+      setUnexportedChanges(false);
       currentTermKey = null;
       termEditorEl.classList.add('hidden');
       metadataEditorEl.classList.remove('hidden');
