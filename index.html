@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EditionCrafter Glossary Editor</title>
+  
+  <!-- SEO Best Practices -->
+  <meta name="description" content="A powerful and modern editor for EditionCrafter glossaries in JSON format.">
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <!-- Markdown Parser -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
+  <!-- App Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Drag & Drop Overlay -->
+  <div id="drop-overlay" class="hidden">
+    <div class="drop-content">
+      <i class="ph ph-upload-simple"></i>
+      <h2>Drop glossary JSON file to import</h2>
+    </div>
+  </div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="glass-header">
+      <div class="header-brand">
+        <i class="ph-fill ph-book-open-text logo-icon"></i>
+        <h1>Glossary Editor</h1>
+        <span class="badge">EditionCrafter</span>
+      </div>
+      
+      <div class="header-actions">
+        <div class="search-box">
+          <i class="ph ph-magnifying-glass"></i>
+          <input type="text" id="global-search" placeholder="Search entries...">
+        </div>
+        
+        <div class="action-buttons">
+          <button id="btn-import" class="btn btn-secondary tooltip-trigger" data-tooltip="Import an existing glossary JSON file">
+            <i class="ph ph-upload-simple"></i> Import
+          </button>
+          <input type="file" id="file-import" accept=".json" class="hidden">
+          
+          <button id="btn-export" class="btn btn-primary tooltip-trigger" data-tooltip="Export your changes to a JSON file">
+            <i class="ph ph-download-simple"></i> Export JSON
+          </button>
+          
+          <button id="btn-settings" class="btn btn-icon tooltip-trigger" data-tooltip="Editor settings">
+            <i class="ph ph-gear"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Layout -->
+    <main class="main-layout">
+      <!-- Sidebar: Entries List -->
+      <aside class="sidebar glass-panel">
+        <div class="sidebar-header">
+          <h2>Terms <span id="term-count" class="badge">0</span></h2>
+          <button id="btn-add-term" class="btn btn-icon btn-primary-light tooltip-trigger" data-tooltip="Add a new term">
+            <i class="ph ph-plus"></i>
+          </button>
+        </div>
+        
+        <div id="entries-list" class="entries-list">
+          <!-- Populated by JS -->
+        </div>
+      </aside>
+
+      <!-- Main Editor Area -->
+      <section class="editor-area glass-panel">
+        
+        <!-- Metadata Editor (Title & Citation) -->
+        <div id="metadata-editor" class="editor-section">
+          <div class="section-header">
+            <h2>Glossary Metadata</h2>
+            <p class="subtitle">General information about this glossary</p>
+          </div>
+          
+          <div class="form-group markdown-group">
+            <div class="input-header">
+              <label for="glossary-title">Title</label>
+              <i class="ph-fill ph-info tooltip-trigger" data-tooltip="A subheader for the glossary (Markdown supported)"></i>
+            </div>
+            <div class="split-pane">
+              <textarea id="glossary-title" placeholder="# My Glossary"></textarea>
+              <div id="glossary-title-preview" class="markdown-preview markdown-body"></div>
+            </div>
+          </div>
+
+          <div class="form-group markdown-group">
+            <div class="input-header">
+              <label for="glossary-citation">Citation</label>
+              <i class="ph-fill ph-info tooltip-trigger" data-tooltip="Information on how to cite the glossary (Markdown supported)"></i>
+            </div>
+            <div class="split-pane">
+              <textarea id="glossary-citation" placeholder="Cite this as..."></textarea>
+              <div id="glossary-citation-preview" class="markdown-preview markdown-body"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Term Editor -->
+        <div id="term-editor" class="editor-section hidden">
+          <div class="section-header flex-between">
+            <div>
+              <h2 id="current-term-display">Select a Term</h2>
+              <p class="subtitle">Edit details and meanings for this term</p>
+            </div>
+            <button id="btn-delete-term" class="btn btn-danger tooltip-trigger" data-tooltip="Delete this entire term">
+              <i class="ph ph-trash"></i> Delete Term
+            </button>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <div class="input-header">
+                <label for="term-key">Term ID / Key</label>
+                <i class="ph-fill ph-info tooltip-trigger" data-tooltip="The unique identifier/key for this term in the JSON"></i>
+              </div>
+              <input type="text" id="term-key" placeholder="e.g. Apple">
+            </div>
+
+            <div class="form-group">
+              <div class="input-header">
+                <label for="term-headword">Headword</label>
+                <i class="ph-fill ph-info tooltip-trigger" data-tooltip="The primary form of the term"></i>
+              </div>
+              <input type="text" id="term-headword" placeholder="e.g. Apple">
+            </div>
+            
+            <div class="form-group">
+              <div class="input-header">
+                <label for="term-alternateSpellings">Alternate Spellings</label>
+                <i class="ph-fill ph-info tooltip-trigger" data-tooltip="Comma separated list of alternate spellings"></i>
+              </div>
+              <input type="text" id="term-alternateSpellings" placeholder="e.g. Apel, Appel">
+            </div>
+
+            <div class="form-group">
+              <div class="input-header">
+                <label for="term-modernSpelling">Modern Spelling</label>
+                <i class="ph-fill ph-info tooltip-trigger" data-tooltip="The modern spelling of the term"></i>
+              </div>
+              <input type="text" id="term-modernSpelling" placeholder="e.g. Apple">
+            </div>
+
+            <div class="form-group">
+              <div class="input-header">
+                <label for="term-antonym">Antonym</label>
+                <i class="ph-fill ph-info tooltip-trigger" data-tooltip="Opposite meaning term"></i>
+              </div>
+              <input type="text" id="term-antonym" placeholder="e.g. Orange">
+            </div>
+
+            <div class="form-group">
+              <div class="input-header">
+                <label for="term-synonym">Synonym</label>
+                <i class="ph-fill ph-info tooltip-trigger" data-tooltip="Similar meaning term"></i>
+              </div>
+              <input type="text" id="term-synonym" placeholder="e.g. Pomme">
+            </div>
+
+            <div class="form-group">
+              <div class="input-header">
+                <label for="term-seeAlso">See Also</label>
+                <i class="ph-fill ph-info tooltip-trigger" data-tooltip="Reference to another related term"></i>
+              </div>
+              <input type="text" id="term-seeAlso" placeholder="e.g. Fruit">
+            </div>
+          </div>
+
+          <div class="meanings-section">
+            <div class="section-header flex-between">
+              <h3>Meanings</h3>
+              <button id="btn-add-meaning" class="btn btn-secondary btn-sm tooltip-trigger" data-tooltip="Add a new meaning to this term">
+                <i class="ph ph-plus"></i> Add Meaning
+              </button>
+            </div>
+            
+            <div id="meanings-container" class="meanings-container">
+              <!-- Meanings populated by JS -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="modal-overlay hidden">
+    <div class="modal-content glass-panel">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button id="btn-close-settings" class="btn btn-icon"><i class="ph ph-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>Sort Alphabetically</h3>
+            <p>Sort terms alphabetically in the sidebar by default.</p>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-sort-alpha" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="setting-item">
+          <div class="setting-info">
+            <h3>Reset Data</h3>
+            <p>Clear all local data and start fresh.</p>
+          </div>
+          <button id="btn-reset-data" class="btn btn-danger">Reset Editor</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Tooltip Container -->
+  <div id="tooltip-container" class="custom-tooltip hidden"></div>
+
+  <!-- App Script -->
+  <script defer src="app.js"></script>
+</body>
+</html>
