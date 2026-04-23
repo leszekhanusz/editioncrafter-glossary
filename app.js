@@ -384,7 +384,7 @@ function renderMeanings() {
         </div>
         <div class="form-group" style="grid-column: span 2;">
           <label>References</label>
-          <input type="text" class="m-ref" data-index="${index}" value="${meaningObj.references || ''}" placeholder="e.g. Doc1, page 5">
+          <input type="text" class="m-ref" data-index="${index}" value="${meaningObj.references || ''}">
         </div>
       </div>
     `;
