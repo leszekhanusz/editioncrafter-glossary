@@ -246,6 +246,26 @@
       </div>
     </div>
   </div>
+  <!-- New Term Modal -->
+  <div id="new-term-modal" class="modal-overlay hidden" style="z-index: 200;">
+    <div class="modal-content glass-panel">
+      <div class="modal-header">
+        <h2>New Term</h2>
+        <button id="btn-close-new-term" class="btn btn-icon"><i class="ph ph-x"></i></button>
+      </div>
+      <div class="modal-body" style="margin-bottom: 1.5rem;">
+        <div class="form-group">
+          <label for="new-term-input">Term ID / Key</label>
+          <input type="text" id="new-term-input" placeholder="e.g. Banana" autocomplete="off">
+          <p id="new-term-error" class="hidden" style="color: var(--danger); font-size: 0.85rem; margin-top: 0.5rem;"></p>
+        </div>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 1rem;">
+        <button id="btn-new-term-cancel" class="btn btn-secondary">Cancel</button>
+        <button id="btn-new-term-create" class="btn btn-primary">Create Term</button>
+      </div>
+    </div>
+  </div>
   <!-- Custom Tooltip Container -->
   <div id="tooltip-container" class="custom-tooltip"></div>
 

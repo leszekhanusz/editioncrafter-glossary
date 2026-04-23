@@ -61,6 +61,14 @@ const btnConfirmYes = document.getElementById('btn-confirm-yes');
 const btnConfirmNo = document.getElementById('btn-confirm-no');
 const btnCloseConfirm = document.getElementById('btn-close-confirm');
 
+// New Term modal
+const newTermModal = document.getElementById('new-term-modal');
+const newTermInput = document.getElementById('new-term-input');
+const newTermError = document.getElementById('new-term-error');
+const btnNewTermCreate = document.getElementById('btn-new-term-create');
+const btnNewTermCancel = document.getElementById('btn-new-term-cancel');
+const btnCloseNewTerm = document.getElementById('btn-close-new-term');
+
 // Returns a Promise<boolean> — resolves true on confirm, false on cancel
 function showConfirm(message, { title = 'Confirm Action', confirmLabel = 'Confirm', confirmClass = 'btn-danger' } = {}) {
   return new Promise((resolve) => {
@@ -86,6 +94,59 @@ function showConfirm(message, { title = 'Confirm Action', confirmLabel = 'Confir
     btnConfirmNo.addEventListener('click', onNo);
     btnCloseConfirm.addEventListener('click', onNo);
     confirmModal.addEventListener('click', onOutside);
+  });
+}
+
+// Returns a Promise<string|null> — resolves with term key on success, null on cancel
+function showNewTermModal() {
+  return new Promise((resolve) => {
+    newTermInput.value = '';
+    newTermError.textContent = '';
+    newTermError.classList.add('hidden');
+    newTermModal.classList.remove('hidden');
+    newTermInput.focus();
+
+    function validate() {
+      const key = newTermInput.value.trim();
+      if (!key) {
+        newTermError.textContent = 'Term ID cannot be empty.';
+        newTermError.classList.remove('hidden');
+        return;
+      }
+      if (glossary.entries[key]) {
+        newTermError.textContent = `A term with the key "${key}" already exists.`;
+        newTermError.classList.remove('hidden');
+        return;
+      }
+      cleanup(key);
+    }
+
+    function cleanup(result) {
+      newTermModal.classList.add('hidden');
+      btnNewTermCreate.removeEventListener('click', validate);
+      btnNewTermCancel.removeEventListener('click', onCancel);
+      btnCloseNewTerm.removeEventListener('click', onCancel);
+      newTermModal.removeEventListener('click', onOutside);
+      newTermInput.removeEventListener('keydown', onKeydown);
+      resolve(result);
+    }
+    function onCancel() { cleanup(null); }
+    function onOutside(e) { if (e.target === newTermModal) cleanup(null); }
+    function onKeydown(e) {
+      if (e.key === 'Enter') validate();
+      if (e.key === 'Escape') cleanup(null);
+      // Clear error on any typing
+      if (newTermError.textContent) {
+        newTermError.textContent = '';
+        newTermError.classList.add('hidden');
+      }
+    }
+
+    btnNewTermCreate.addEventListener('click', validate);
+    btnNewTermCancel.addEventListener('click', onCancel);
+    btnCloseNewTerm.addEventListener('click', onCancel);
+    newTermModal.addEventListener('click', onOutside);
+    newTermInput.addEventListener('keydown', onKeydown);
   });
 }
 
@@ -201,13 +262,9 @@ function loadTerm(key) {
   renderMeanings();
 }
 
-function createNewTerm() {
-  let newKey = "New Term";
-  let count = 1;
-  while(glossary.entries[newKey]) {
-    newKey = `New Term ${count}`;
-    count++;
-  }
+async function createNewTerm() {
+  const newKey = await showNewTermModal();
+  if (!newKey) return;
 
   glossary.entries[newKey] = {
     alternateSpellings: "",
@@ -223,7 +280,7 @@ function createNewTerm() {
     synonym: "",
     seeAlso: ""
   };
-  
+
   saveState();
   loadTerm(newKey);
 }
