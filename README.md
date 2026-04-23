@@ -2,12 +2,16 @@
 
 This project is a static, premium web-based editor designed specifically to create, manage, and edit glossaries for [EditionCrafter](https://editioncrafter.org/guide/) projects.
 
-The editor runs entirely in the browser using Vanilla HTML, CSS, and JavaScript. All data is automatically saved to your browser's LocalStorage, meaning you can close the tab and return later without losing your work.
+The editor runs entirely in the browser using Vanilla HTML, CSS, and JavaScript. All data is automatically saved to your browser's LocalStorage, meaning you can close the tab and return later without losing your work (you should still export to json as your browser cache could be cleaned depending on your browser settings and the work would be lost).
+
+## Online version
+
+You can start using the editor by going to [https://leszekhanusz.github.io/editioncrafter-glossary](https://leszekhanusz.github.io/editioncrafter-glossary)
 
 ## Features
 
 - **Beautiful, Premium Design**: A modern dark mode interface with glassmorphism effects and smooth micro-animations.
-- **Local Storage Auto-save**: Never lose your progress.
+- **Local Storage Auto-save**: Progress is saved constantly.
 - **Drag & Drop Import**: Simply drag a `.json` glossary file into the window to import it, or use the Import button.
 - **JSON Export**: Export your glossary to a compliant JSON format ready to be consumed by EditionCrafter.
 - **Markdown Support**: Render markdown live while editing the glossary's `Title` and `Citation`.
@@ -17,7 +21,7 @@ The editor runs entirely in the browser using Vanilla HTML, CSS, and JavaScript.
 
 ## Usage
 
-1. **Open the App**: Since this is a static webpage without dependencies, you can simply open `index.html` in your web browser. Alternatively, you can host it anywhere (like GitHub Pages).
+1. **Open the App**: Since this is a static webpage without dependencies, you can simply open `index.html` in your web browser. An online version is available at [https://leszekhanusz.github.io/editioncrafter-glossary](https://leszekhanusz.github.io/editioncrafter-glossary)
 2. **Edit Metadata**: Fill out the glossary title and citation. These support Markdown.
 3. **Add Terms**: Click the `+` button in the sidebar to add a new term. Fill in the relevant fields (`Alternate Spellings`, `Modern Spelling`, etc.).
 4. **Add Meanings**: For a selected term, click "Add Meaning" to define its parts of speech, definition, and references.
@@ -51,10 +55,10 @@ This editor generates and consumes JSON files adhering to the following structur
 }
 ```
 
-## Setup & Deployment
+## Setup & Deployment in your own repo
 
-No build step is required. You can instantly deploy this editor via GitHub Pages:
-1. Push this repository to GitHub.
+If for some reason you want to have your own version of the app, no build step is required. You can instantly deploy this editor via GitHub Pages:
+1. Fork this repository to GitHub.
 2. Go to **Settings > Pages**.
 3. Select the `main` branch and `/ (root)` folder.
 4. Your editor will be live and functional immediately!
