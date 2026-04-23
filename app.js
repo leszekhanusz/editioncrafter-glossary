@@ -54,6 +54,42 @@ const toggleSortAlpha = document.getElementById('setting-sort-alpha');
 const btnResetData = document.getElementById('btn-reset-data');
 const dropOverlay = document.getElementById('drop-overlay');
 
+// Confirm modal
+const confirmModal = document.getElementById('confirm-modal');
+const confirmMessage = document.getElementById('confirm-message');
+const confirmTitle = document.getElementById('confirm-title');
+const btnConfirmYes = document.getElementById('btn-confirm-yes');
+const btnConfirmNo = document.getElementById('btn-confirm-no');
+const btnCloseConfirm = document.getElementById('btn-close-confirm');
+
+// Returns a Promise<boolean> — resolves true on confirm, false on cancel
+function showConfirm(message, { title = 'Confirm Action', confirmLabel = 'Confirm', confirmClass = 'btn-danger' } = {}) {
+  return new Promise((resolve) => {
+    confirmTitle.textContent = title;
+    confirmMessage.textContent = message;
+    btnConfirmYes.textContent = confirmLabel;
+    btnConfirmYes.className = `btn ${confirmClass}`;
+    confirmModal.classList.remove('hidden');
+
+    function cleanup(result) {
+      confirmModal.classList.add('hidden');
+      btnConfirmYes.removeEventListener('click', onYes);
+      btnConfirmNo.removeEventListener('click', onNo);
+      btnCloseConfirm.removeEventListener('click', onNo);
+      confirmModal.removeEventListener('click', onOutside);
+      resolve(result);
+    }
+    function onYes() { cleanup(true); }
+    function onNo() { cleanup(false); }
+    function onOutside(e) { if (e.target === confirmModal) cleanup(false); }
+
+    btnConfirmYes.addEventListener('click', onYes);
+    btnConfirmNo.addEventListener('click', onNo);
+    btnCloseConfirm.addEventListener('click', onNo);
+    confirmModal.addEventListener('click', onOutside);
+  });
+}
+
 // Initialize
 function init() {
   // Metadata init
@@ -227,9 +263,14 @@ function updateCurrentTerm() {
   renderSidebar(); // Update lists
 }
 
-function deleteCurrentTerm() {
+async function deleteCurrentTerm() {
   if (!currentTermKey) return;
-  if(confirm(`Are you sure you want to delete "${currentTermKey}"?`)) {
+  const confirmed = await showConfirm(`Are you sure you want to delete "${currentTermKey}"?`, {
+    title: 'Delete Term',
+    confirmLabel: 'Delete',
+    confirmClass: 'btn-danger'
+  });
+  if (confirmed) {
     delete glossary.entries[currentTermKey];
     currentTermKey = null;
     termEditorEl.classList.add('hidden');
@@ -282,15 +323,20 @@ function renderMeanings() {
 
   // Attach meaning events
   document.querySelectorAll('.delete-meaning').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', async (e) => {
       const idx = e.currentTarget.getAttribute('data-index');
       const m = term.meanings[idx];
       const hasContent = (m.partOfSpeech && m.partOfSpeech.trim() !== '') || 
                          (m.meaning && m.meaning.trim() !== '') || 
                          (m.references && m.references.trim() !== '');
       
-      if (hasContent && !confirm("Are you sure you want to delete this meaning?")) {
-        return;
+      if (hasContent) {
+        const confirmed = await showConfirm('Are you sure you want to delete this meaning?', {
+          title: 'Delete Meaning',
+          confirmLabel: 'Delete',
+          confirmClass: 'btn-danger'
+        });
+        if (!confirmed) return;
       }
       
       term.meanings.splice(idx, 1);
@@ -486,8 +532,13 @@ function setupEventListeners() {
     renderSidebar();
   });
 
-  btnResetData.addEventListener('click', () => {
-    if(confirm("Are you sure you want to delete ALL data and reset? This cannot be undone.")) {
+  btnResetData.addEventListener('click', async () => {
+    const confirmed = await showConfirm('Are you sure you want to delete ALL data and reset? This cannot be undone.', {
+      title: 'Reset Editor',
+      confirmLabel: 'Reset',
+      confirmClass: 'btn-danger'
+    });
+    if (confirmed) {
       glossary = structuredClone(defaultState);
       saveState();
       currentTermKey = null;
