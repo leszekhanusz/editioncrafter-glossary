@@ -17,6 +17,8 @@ const termListEl = document.getElementById('entries-list');
 const termCountEl = document.getElementById('term-count');
 const sidebarTitleText = document.getElementById('sidebar-title-text');
 const termEditorEl = document.getElementById('term-editor');
+const metadataEditorEl = document.getElementById('metadata-editor');
+const btnShowMetadata = document.getElementById('btn-show-metadata');
 const btnAddTerm = document.getElementById('btn-add-term');
 const btnClearSearch = document.getElementById('btn-clear-search');
 const btnDeleteTerm = document.getElementById('btn-delete-term');
@@ -152,6 +154,7 @@ function loadTerm(key) {
   if (!term) return;
 
   termEditorEl.classList.remove('hidden');
+  metadataEditorEl.classList.add('hidden');
   document.getElementById('current-term-display').textContent = `Editing: ${key}`;
 
   fieldTermKey.value = key;
@@ -224,6 +227,7 @@ function deleteCurrentTerm() {
     delete glossary.entries[currentTermKey];
     currentTermKey = null;
     termEditorEl.classList.add('hidden');
+    metadataEditorEl.classList.remove('hidden');
     saveState();
     renderSidebar();
   }
@@ -377,6 +381,7 @@ function handleImportFile(file) {
       saveState();
       currentTermKey = null;
       termEditorEl.classList.add('hidden');
+      metadataEditorEl.classList.remove('hidden');
       init();
       alert("Glossary imported successfully!");
     } catch (err) {
@@ -434,6 +439,12 @@ function setupEventListeners() {
   });
 
   // Buttons
+  btnShowMetadata.addEventListener('click', () => {
+    currentTermKey = null;
+    termEditorEl.classList.add('hidden');
+    metadataEditorEl.classList.remove('hidden');
+    renderSidebar();
+  });
   btnAddTerm.addEventListener('click', createNewTerm);
   btnClearSearch.addEventListener('click', () => {
     globalSearch.value = '';
@@ -462,6 +473,7 @@ function setupEventListeners() {
       saveState();
       currentTermKey = null;
       termEditorEl.classList.add('hidden');
+      metadataEditorEl.classList.remove('hidden');
       settingsModal.classList.add('hidden');
       init();
     }

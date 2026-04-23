@@ -63,22 +63,28 @@
 
     <!-- Main Layout -->
     <main class="main-layout">
-      <!-- Sidebar: Entries List -->
-      <aside class="sidebar glass-panel">
-        <div class="sidebar-header">
-          <h2><span id="sidebar-title-text">Terms</span> <span id="term-count" class="badge">0</span></h2>
-          <button id="btn-add-term" class="btn btn-icon btn-primary-light tooltip-trigger" data-tooltip="Add a new term">
-            <i class="ph ph-plus"></i>
-          </button>
-          <button id="btn-clear-search" class="btn btn-icon btn-secondary tooltip-trigger hidden" data-tooltip="Clear search filter">
-            <i class="ph ph-x"></i>
-          </button>
-        </div>
-        
-        <div id="entries-list" class="entries-list">
-          <!-- Populated by JS -->
-        </div>
-      </aside>
+      <div class="sidebar-wrapper" style="display: flex; flex-direction: column; gap: 1rem; width: 300px;">
+        <button id="btn-show-metadata" class="btn btn-secondary glass-panel" style="width: 100%; justify-content: center; padding: 1rem; font-size: 1rem;">
+          <i class="ph ph-info"></i> Glossary Metadata
+        </button>
+
+        <!-- Sidebar: Entries List -->
+        <aside class="sidebar glass-panel" style="flex: 1; width: 100%;">
+          <div class="sidebar-header">
+            <h2><span id="sidebar-title-text">Terms</span> <span id="term-count" class="badge">0</span></h2>
+            <button id="btn-add-term" class="btn btn-icon btn-primary-light tooltip-trigger" data-tooltip="Add a new term">
+              <i class="ph ph-plus"></i>
+            </button>
+            <button id="btn-clear-search" class="btn btn-icon btn-secondary tooltip-trigger hidden" data-tooltip="Clear search filter">
+              <i class="ph ph-x"></i>
+            </button>
+          </div>
+          
+          <div id="entries-list" class="entries-list">
+            <!-- Populated by JS -->
+          </div>
+        </aside>
+      </div>
 
       <!-- Main Editor Area -->
       <section class="editor-area glass-panel">
