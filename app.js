@@ -425,7 +425,11 @@ function setupEventListeners() {
   });
 
   // Terms update
-  [fieldTermKey, fieldHeadword, fieldAltSpelling, fieldModernSpelling, fieldAntonym, fieldSynonym, fieldSeeAlso].forEach(el => {
+  fieldTermKey.addEventListener('change', updateCurrentTerm);
+  fieldTermKey.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') fieldTermKey.blur();
+  });
+  [fieldHeadword, fieldAltSpelling, fieldModernSpelling, fieldAntonym, fieldSynonym, fieldSeeAlso].forEach(el => {
     el.addEventListener('input', updateCurrentTerm);
   });
 
