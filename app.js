@@ -179,7 +179,13 @@ function createNewTerm() {
   glossary.entries[newKey] = {
     headword: "",
     alternateSpellings: "",
-    meanings: [],
+    meanings: [
+      {
+        partOfSpeech: "",
+        meaning: "",
+        references: ""
+      }
+    ],
     modernSpelling: "",
     antonym: "",
     synonym: "",
