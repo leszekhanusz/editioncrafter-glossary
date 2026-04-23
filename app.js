@@ -284,6 +284,15 @@ function renderMeanings() {
   document.querySelectorAll('.delete-meaning').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const idx = e.currentTarget.getAttribute('data-index');
+      const m = term.meanings[idx];
+      const hasContent = (m.partOfSpeech && m.partOfSpeech.trim() !== '') || 
+                         (m.meaning && m.meaning.trim() !== '') || 
+                         (m.references && m.references.trim() !== '');
+      
+      if (hasContent && !confirm("Are you sure you want to delete this meaning?")) {
+        return;
+      }
+      
       term.meanings.splice(idx, 1);
       saveState();
       renderMeanings();
