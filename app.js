@@ -15,8 +15,10 @@ let sortAlphabetically = localStorage.getItem('editioncrafter_sort_alpha') !== '
 // DOM Elements
 const termListEl = document.getElementById('entries-list');
 const termCountEl = document.getElementById('term-count');
+const sidebarTitleText = document.getElementById('sidebar-title-text');
 const termEditorEl = document.getElementById('term-editor');
 const btnAddTerm = document.getElementById('btn-add-term');
+const btnClearSearch = document.getElementById('btn-clear-search');
 const btnDeleteTerm = document.getElementById('btn-delete-term');
 const btnAddMeaning = document.getElementById('btn-add-meaning');
 const meaningsContainer = document.getElementById('meanings-container');
@@ -89,6 +91,9 @@ function renderSidebar() {
   
   // Apply Search Filter
   if (searchQuery) {
+    sidebarTitleText.textContent = 'Filtered Terms';
+    btnAddTerm.classList.add('hidden');
+    btnClearSearch.classList.remove('hidden');
     const q = searchQuery.toLowerCase();
     entries = entries.filter(key => {
       if (key.toLowerCase().includes(q)) return true;
@@ -105,6 +110,10 @@ function renderSidebar() {
       }
       return false;
     });
+  } else {
+    sidebarTitleText.textContent = 'Terms';
+    btnAddTerm.classList.remove('hidden');
+    btnClearSearch.classList.add('hidden');
   }
 
   // Apply Sorting
@@ -426,6 +435,11 @@ function setupEventListeners() {
 
   // Buttons
   btnAddTerm.addEventListener('click', createNewTerm);
+  btnClearSearch.addEventListener('click', () => {
+    globalSearch.value = '';
+    searchQuery = '';
+    renderSidebar();
+  });
   btnDeleteTerm.addEventListener('click', deleteCurrentTerm);
   btnAddMeaning.addEventListener('click', addMeaning);
   
