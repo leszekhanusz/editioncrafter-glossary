@@ -33,7 +33,6 @@ const citationPreview = document.getElementById('glossary-citation-preview');
 
 // Term fields
 const fieldTermKey = document.getElementById('term-key');
-const fieldHeadword = document.getElementById('term-headword');
 const fieldAltSpelling = document.getElementById('term-alternateSpellings');
 const fieldModernSpelling = document.getElementById('term-modernSpelling');
 const fieldAntonym = document.getElementById('term-antonym');
@@ -136,7 +135,6 @@ function renderSidebar() {
     entries = entries.filter(key => {
       if (key.toLowerCase().includes(q)) return true;
       const term = glossary.entries[key];
-      if (term.headword && term.headword.toLowerCase().includes(q)) return true;
       if (term.alternateSpellings && term.alternateSpellings.toLowerCase().includes(q)) return true;
       if (term.modernSpelling && term.modernSpelling.toLowerCase().includes(q)) return true;
       // Search in meanings
@@ -175,7 +173,7 @@ function renderSidebar() {
     div.className = `entry-item ${key === currentTermKey ? 'active' : ''}`;
     div.innerHTML = `
       <div class="entry-title">${key || 'Unnamed Term'}</div>
-      <div class="entry-subtitle">${term.headword || term.alternateSpellings || 'No headword'}</div>
+      <div class="entry-subtitle">${term.alternateSpellings || ''}</div>
     `;
     div.addEventListener('click', () => loadTerm(key));
     termListEl.appendChild(div);
@@ -194,7 +192,6 @@ function loadTerm(key) {
   document.getElementById('current-term-display').textContent = `Editing: ${key}`;
 
   fieldTermKey.value = key;
-  fieldHeadword.value = term.headword || '';
   fieldAltSpelling.value = term.alternateSpellings || '';
   fieldModernSpelling.value = term.modernSpelling || '';
   fieldAntonym.value = term.antonym || '';
@@ -213,7 +210,6 @@ function createNewTerm() {
   }
 
   glossary.entries[newKey] = {
-    headword: "",
     alternateSpellings: "",
     meanings: [
       {
@@ -252,7 +248,6 @@ function updateCurrentTerm() {
   }
 
   const term = glossary.entries[currentTermKey];
-  term.headword = fieldHeadword.value;
   term.alternateSpellings = fieldAltSpelling.value;
   term.modernSpelling = fieldModernSpelling.value;
   term.antonym = fieldAntonym.value;
@@ -455,7 +450,17 @@ function handleImportFile(file) {
 
 // Export JSON
 function exportJSON() {
-  const dataStr = JSON.stringify(glossary, null, 2);
+  // Build export object with headWord derived from the term key, not stored in state
+  const exportData = {
+    title: glossary.title,
+    citation: glossary.citation,
+    entries: {}
+  };
+  for (const [key, term] of Object.entries(glossary.entries)) {
+    const { headword, ...rest } = term; // strip any legacy headword field
+    exportData.entries[key] = { headWord: key, ...rest };
+  }
+  const dataStr = JSON.stringify(exportData, null, 2);
   const blob = new Blob([dataStr], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   
@@ -490,7 +495,7 @@ function setupEventListeners() {
   fieldTermKey.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') fieldTermKey.blur();
   });
-  [fieldHeadword, fieldAltSpelling, fieldModernSpelling, fieldAntonym, fieldSynonym, fieldSeeAlso].forEach(el => {
+  [fieldAltSpelling, fieldModernSpelling, fieldAntonym, fieldSynonym, fieldSeeAlso].forEach(el => {
     el.addEventListener('input', updateCurrentTerm);
   });
 
